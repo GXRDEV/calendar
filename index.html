@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/daterangepicker.css">
+</head>
+<style>
+    .time{
+        display: flex; 
+        justify-content: center;
+        align-items:center;
+    }
+    .controls{
+        position: relative;
+    }
+    .text{
+        padding-right: 20px
+    }
+    .arrow{ 
+        position: absolute; 
+        right: 8px; top: 10px; 
+        border-right: 2px solid #a0a1a5; 
+        border-bottom: 2px solid #a0a1a5;  
+        width: 8px; 
+        height: 8px; 
+        transform: rotate(45deg); 
+    }
+</style>
+<body>
+    <div class="time">
+        <label class="control-label">
+            选择日期: 
+        </label>
+        <div class="controls" style="width: 500px">
+            <input id="reportrange" class="form-control show-time text" type="text" name="daterange" value="" />
+            <span class="arrow"></span>
+        </div>
+    </div>
+</body>
+<script src="./js/jquery-2.1.1.js"></script>
+<script src="./js/bootstrap.js"></script>
+<script src="./js/moment.min.js"></script>
+<script src="./js/daterangepicker.js"></script>
+<script>
+    (function(){
+        var formData = {};
+        var start = moment().subtract(12, 'month') 
+        var end = moment()
+        // moment() 方法
+        
+        function cd ( start, end ){
+            if( !start._isValid || !end._isValid ){
+                $('#reportrange').val('==全部时段==');
+            } else {
+                $('#reportrange').val(start.format('YYYY-MM-DD')+' 至 '+ end.format('YYYY-MM-DD') );
+            }
+        }
+        formData['startDate'] = start.format('YYYY-MM-DD')
+        formData['endDate'] = end.format('YYYY-MM-DD')
+        $("#reportrange").daterangepicker({
+            maxDate : moment(),
+            showDropdowns : true,
+            showWeekNumbers : false, //是否显示第几周
+            timePicker : false, //是否显示小时和分钟
+            locale : {  
+                format : 'YYYY-MM-DD', //控件中from和to 显示的日期格式  HH-mm-ss
+                separator : ' 至 ',
+                applyLabel : '确定',  
+                cancelLabel : '取消',  
+                fromLabel : '起始时间',  
+                toLabel : '结束时间',  
+                customRangeLabel : '自定义',  
+                daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],  
+                monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],  
+                firstDay : 1  
+            },
+            ranges : {  
+                //'最近1小时': [moment().subtract('hours',1), moment()],  
+                '今日': [moment().startOf('day'), moment()],  
+                '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],  
+                '最近7日': [moment().subtract('days', 6), moment()],  
+                '最近30日': [moment().subtract('days', 29), moment()],
+                '最近1年': [moment().subtract(12, 'month'), moment()],
+                '当月': [moment().startOf('month'), moment().endOf('month')],
+                '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')] 
+            }  
+        }, cd)
+
+        $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+            // 点击重新给 formData 赋值                   
+            formData['startDate'] = picker.startDate._isValid ? picker.startDate.format('YYYY-MM-DD') : ''；
+            formData['endDate'] = picker.endDate._isValid ? picker.endDate.format('YYYY-MM-DD') : '';
+            // 赋值完成，选中的开始时间与结束时间
+            console.log(formData['startDate'])
+            console.log(formData['endDate'] )
+        });
+        cd(start, end)
+    })()
+</script>
+</html>
